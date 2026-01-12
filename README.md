@@ -42,5 +42,5 @@ El sistema gestiona una lógica de negocio robusta mediante más de 30 tablas in
 4. Ejecutar: `python app_plastecniva.py`
 
 ---
-**Desarrollado por:** [MARVISOFT, Ingenieria de sotfware](https://github.com/JesusCleiner) - Estudiante de Ingeniería de TI.
+**Desarrollado por:** [Cleiner Gutiérrez](https://github.com/JesusCleiner) - Estudiante de Ingeniería de TI.
 *Transformando la gestión industrial mediante soluciones tecnológicas de alto impacto.*
