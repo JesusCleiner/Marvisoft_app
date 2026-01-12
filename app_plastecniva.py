@@ -1,22 +1,23 @@
-
 import os
-from dotenv import load_dotenv # Importar la función para cargar .env
+from dotenv import load_dotenv
 from app import create_app
 
-# 1. Cargar las variables de entorno del archivo .env
-# Esto debe ocurrir antes de que se llame a create_app(), ya que create_app()
-# intentará leer la configuración de la base de datos (DATABASE_URL).
 load_dotenv() 
 
-# 2. Crear la instancia de la aplicación Flask
 app = create_app()
 
-# CRUCIAL: Aseguramos que la SECRET_KEY del entorno se transfiera a la configuración de Flask.
-# Esto resuelve el RuntimeError de CSRF, ya que la clave está disponible en app.config.
+# ESTA LÍNEA ES VITAL: Asegura que Flask use la URL de Render
+if 'DATABASE_URL' in os.environ:
+    # Render a veces da la URL como 'postgres://', pero SQLAlchemy requiere 'postgresql://'
+    uri = os.environ.get('DATABASE_URL')
+    if uri and uri.startswith("postgres://"):
+        uri = uri.replace("postgres://", "postgresql://", 1)
+    app.config['SQLALCHEMY_DATABASE_URI'] = uri
+
 if 'SECRET_KEY' in os.environ:
     app.config['SECRET_KEY'] = os.environ['SECRET_KEY']
     
 if __name__ == '__main__':
-    # 3. Inicia la aplicación
-    # La variable DEBUG se carga desde config.py (que a su vez lee el entorno)
-    app.run(debug=app.config['DEBUG'])
+    # En producción (Render), el puerto debe ser dinámico
+    port = int(os.environ.get("PORT", 10000))
+    app.run(host='0.0.0.0', port=port, debug=app.config.get('DEBUG', False))
