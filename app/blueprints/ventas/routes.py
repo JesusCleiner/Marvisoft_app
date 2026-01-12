@@ -1,0 +1,7 @@
+from flask import Blueprint
+
+ventas_bp = Blueprint('ventas', __name__, url_prefix='/ventas')
+
+@ventas_bp.route('/')
+def index():
+    return "¡Ventas funciona!"

@@ -1,0 +1,143 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container mt-4" style="max-width: 1100px;">
+  <div class="card shadow-sm border-0 rounded-3">
+    <div class="card-header bg-primary text-white text-center">
+      <h4 class="mb-0">Registrar Cliente</h4>
+    </div>
+
+    <div class="card-body px-5 py-4">
+      <form id="clienteForm" method="POST" novalidate>
+        {{ form.hidden_tag() }}
+
+        <div class="row g-3">
+          <!-- Columna izquierda -->
+          <div class="col-md-6">
+
+            <div class="mb-3">
+              {{ form.ruc.label(class="form-label fw-bold") }}
+              {{ form.ruc(class="form-control") }}
+              {% for error in form.ruc.errors %}
+              <div class="text-danger small">{{ error }}</div>
+              {% endfor %}
+            </div>
+
+            <div class="mb-3">
+              {{ form.nombre.label(class="form-label fw-bold") }}
+              {{ form.nombre(class="form-control") }}
+              {% for error in form.nombre.errors %}
+              <div class="text-danger small">{{ error }}</div>
+              {% endfor %}
+            </div>
+
+            <div class="mb-3">
+              {{ form.direccion.label(class="form-label fw-bold") }}
+              {{ form.direccion(class="form-control") }}
+              {% for error in form.direccion.errors %}
+              <div class="text-danger small">{{ error }}</div>
+              {% endfor %}
+            </div>
+
+            <div class="mb-3">
+              {{ form.telefono.label(class="form-label fw-bold") }}
+              {{ form.telefono(class="form-control") }}
+              {% for error in form.telefono.errors %}
+              <div class="text-danger small">{{ error }}</div>
+              {% endfor %}
+            </div>
+
+          </div>
+
+          <!-- Columna derecha -->
+          <div class="col-md-6">
+
+            <div class="mb-3">
+              {{ form.correo.label(class="form-label fw-bold") }}
+              {{ form.correo(class="form-control") }}
+              {% for error in form.correo.errors %}
+              <div class="text-danger small">{{ error }}</div>
+              {% endfor %}
+            </div>
+
+            <div class="mb-3">
+              {{ form.tipo_contribuyente.label(class="form-label fw-bold") }}
+              {{ form.tipo_contribuyente(class="form-select") }}
+              {% for error in form.tipo_contribuyente.errors %}
+              <div class="text-danger small">{{ error }}</div>
+              {% endfor %}
+            </div>
+
+            <div class="mb-3">
+              {{ form.condicion_comercial.label(class="form-label fw-bold") }}
+              {{ form.condicion_comercial(class="form-select") }}
+              {% for error in form.condicion_comercial.errors %}
+              <div class="text-danger small">{{ error }}</div>
+              {% endfor %}
+            </div>
+
+            <div class="mb-3">
+              {{ form.limite_credito.label(class="form-label fw-bold") }}
+              {{ form.limite_credito(class="form-control") }}
+              {% for error in form.limite_credito.errors %}
+              <div class="text-danger small">{{ error }}</div>
+              {% endfor %}
+            </div>
+
+            <div class="mb-3">
+              {{ form.fecha_creacion.label(class="form-label fw-bold") }}
+              {{ form.fecha_creacion(class="form-control", readonly=True) }}
+            </div>
+          </div>
+        </div>
+
+        <!-- Botones -->
+        <div class="d-flex justify-content-between mt-4">
+          {{ form.submit(class="btn btn-success px-4") }}
+          <button type="button" class="btn btn-danger px-4" id="btnSalir"
+            data-url="{{ url_for('main.home') }}">Salir</button>
+        </div>
+
+      </form>
+
+      <div id="mensaje" class="mt-3"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Script para AJAX -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const form = document.getElementById('clienteForm');
+  const mensaje = document.getElementById('mensaje');
+  const salirBtn = document.getElementById('btnSalir');
+
+  salirBtn.addEventListener('click', function() {
+    window.location.href = this.dataset.url;
+  });
+
+  form.addEventListener('submit', async function(e) {
+    e.preventDefault();
+
+    const formData = new FormData(form);
+    const response = await fetch('{{ url_for("clientes.registrar_cliente") }}', {
+      method: 'POST',
+      body: formData
+    });
+
+    const result = await response.json();
+
+    if (result.success) {
+      mensaje.innerHTML = '<div class="alert alert-success">Cliente guardado correctamente.</div>';
+      form.reset();
+      const now = new Date();
+      const fechaCampo = form.querySelector('input[name="fecha_creacion"]');
+      fechaCampo.value = now.toISOString().slice(0, 19).replace('T', ' ');
+    } else {
+      mensaje.innerHTML = '<div class="alert alert-danger">Error: ' + (result.error || 'No se pudo guardar el cliente.') + '</div>';
+    }
+  });
+});
+</script>
+
+{% endblock %}

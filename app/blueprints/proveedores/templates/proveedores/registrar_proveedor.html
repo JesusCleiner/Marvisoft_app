@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-4">
+  <h3 class="mb-4 text-primary">
+    <i class="bi bi-truck me-2"></i> Registrar Nuevo Proveedor
+  </h3>
+
+  <form id="proveedorForm" method="POST" novalidate>
+    {{ form.hidden_tag() }}
+
+    <div class="row g-3">
+
+      <!-- RUC y Nombre -->
+      <div class="col-md-4">
+        {{ form.ruc.label(class="form-label fw-bold") }}
+        {{ form.ruc(class="form-control", placeholder="Ingrese RUC o Cédula") }}
+      </div>
+
+      <div class="col-md-8">
+        {{ form.nombre.label(class="form-label fw-bold") }}
+        {{ form.nombre(class="form-control", placeholder="Razón Social o Nombre Comercial") }}
+      </div>
+
+      <!-- Dirección, Teléfono, Correo -->
+      <div class="col-md-6">
+        {{ form.direccion.label(class="form-label fw-bold") }}
+        {{ form.direccion(class="form-control", placeholder="Dirección principal") }}
+      </div>
+
+      <div class="col-md-3">
+        {{ form.telefono.label(class="form-label fw-bold") }}
+        {{ form.telefono(class="form-control", placeholder="+593 ...") }}
+      </div>
+
+      <div class="col-md-3">
+        {{ form.correo.label(class="form-label fw-bold") }}
+        {{ form.correo(class="form-control", placeholder="ejemplo@empresa.com") }}
+      </div>
+
+      <!-- Contacto -->
+      <div class="col-md-4">
+        {{ form.contacto.label(class="form-label fw-bold") }}
+        {{ form.contacto(class="form-control", placeholder="Persona de contacto") }}
+      </div>
+
+      <!-- Tipo de proveedor, Tipo de pago, Tiempo de crédito -->
+      <div class="col-md-4">
+        {{ form.tipo_proveedor.label(class="form-label fw-bold") }}
+        {{ form.tipo_proveedor(class="form-select") }}
+      </div>
+
+      <div class="col-md-4">
+        {{ form.tipo_pago.label(class="form-label fw-bold") }}
+        {{ form.tipo_pago(class="form-select") }}
+      </div>
+
+      <div class="col-md-4">
+        {{ form.tiempo_credito.label(class="form-label fw-bold") }}
+        {{ form.tiempo_credito(class="form-control", placeholder="Ej: 30 días") }}
+      </div>
+
+      <!-- Límite crédito y estado -->
+      <div class="col-md-4">
+        {{ form.limite_credito.label(class="form-label fw-bold") }}
+        {{ form.limite_credito(class="form-control", placeholder="0.00") }}
+      </div>
+
+      <div class="col-md-4">
+        {{ form.estado.label(class="form-label fw-bold") }}
+        {{ form.estado(class="form-select") }}
+      </div>
+
+    </div>
+
+    <!-- Botones -->
+    <div class="d-flex justify-content-end mt-4">
+      <button type="submit" class="btn btn-success me-2">
+        <i class="bi bi-save"></i> {{ form.submit.label.text }}
+      </button>
+      <a href="{{ url_for('main.home') }}" class="btn btn-secondary">
+        <i class="bi bi-box-arrow-left"></i> Salir
+      </a>
+    </div>
+  </form>
+</div>
+
+<script>
+  // Limpia el formulario después del envío exitoso
+  document.getElementById('proveedorForm').addEventListener('submit', function (e) {
+    // Si usas AJAX, aquí puedes interceptar el envío.
+    this.reset();
+  });
+</script>
+{% endblock %}

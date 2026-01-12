@@ -1,0 +1,80 @@
+/* ===============================
+   Navbar general
+=================================*/
+.navbar .nav-link,
+.navbar .dropdown-item {
+    color: #ffffff !important; /* letras blancas por defecto */
+    transition: background-color 0.2s, color 0.2s;
+}
+
+/* ===============================
+   Estado activo del menú horizontal
+=================================*/
+.navbar .nav-link.active {
+    background-color: #ffc107 !important; /* dorado */
+    color: #000000 !important;            /* letras negras */
+    border-radius: 5px;
+}
+
+/* ===============================
+   Hover y focus sobre menú y submenú
+   Solo si no está activo el link principal
+=================================*/
+.navbar .nav-link:not(.active):hover,
+.navbar .nav-link:not(.active):focus,
+.navbar .dropdown-item:hover,
+.navbar .dropdown-item:focus {
+    background-color: #ffc107 !important; /* dorado */
+    color: #000000 !important;           /* letras negras */
+    border-radius: 5px;
+}
+
+/* ===============================
+   Mostrar submenú al pasar mouse en desktop
+=================================*/
+@media (min-width: 992px) {
+    .navbar .dropdown:hover > .dropdown-menu {
+        display: block;
+        margin-top: 0; /* elimina salto */
+    }
+}
+
+/* ===============================
+   Evitar que hover en submenú active otro menú
+=================================*/
+.navbar .dropdown-menu {
+    margin-top: 0;
+}
+
+/* ===============================
+   Opcional: cambiar color de fondo submenú
+=================================*/
+.navbar .dropdown-menu {
+    background-color: #0d6efd; /* azul bootstrap más fuerte */
+}
+
+/* ===============================
+   Submenús con letras más visibles
+=================================*/
+.navbar .dropdown-menu .dropdown-item {
+    color: #ffffff !important;
+}
+
+/* ===============================
+   Submenús hover
+=================================*/
+.navbar .dropdown-menu .dropdown-item:hover,
+.navbar .dropdown-menu .dropdown-item:focus {
+    background-color: #ffc107 !important;
+    color: #000000 !important;
+}
+
+/* ===============================
+   Transiciones suaves
+=================================*/
+.navbar .nav-link,
+.navbar .dropdown-item {
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+

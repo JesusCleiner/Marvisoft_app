@@ -1,0 +1,387 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container mt-4">
+    <h4 class="mb-4 text-primary"><i class="bi bi-receipt me-2"></i> Nueva Factura de Venta</h4>
+
+    <form method="POST" action="{{ url_for('facturacion.generar_factura') }}">
+        {{ form.hidden_tag() }}
+
+        
+
+        <div class="row mb-4 g-3">
+            <div class="col-12">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-dark text-white p-2">
+                        <h6 class="mb-0">📜 Información Fiscal y de Control</h6>
+                    </div>
+                    <div class="card-body p-3 small">
+                        
+                        <div class="row g-2 mb-2">
+                            <div class="col-md-6">
+                                <label class="form-label mb-0 small fw-bold">Razón Social</label>
+                                <input type="text" class="form-control form-control-sm" name="razon_social_emisor" value="{{ datos_emisor.razon_social }}" readonly>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label mb-0 small fw-bold">RUC Emisor</label>
+                                <input type="text" class="form-control form-control-sm" name="ruc_emisor" value="{{ datos_emisor.ruc }}" readonly>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label mb-0 small fw-bold">N° Factura</label>
+                                <input type="text" class="form-control form-control-sm text-danger fw-bold" name="numero_factura_fijo" value="{{ facturas_ventas.numero_factura }}" readonly>
+                            </div>
+                        </div>
+
+                        <div class="row g-2 mb-2">
+                            <div class="col-md-6">
+                                <label class="form-label mb-0 small fw-bold">Dirección Matriz</label>
+                                <input type="text" class="form-control form-control-sm" name="direccion_emisor" value="{{ datos_emisor.direccion_matriz }}" readonly>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label mb-0 small fw-bold">Teléfono</label>
+                                <input type="text" class="form-control form-control-sm" name="telefono_emisor" value="{{ datos_emisor.telefono | default('N/A') }}" readonly>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label mb-0 small fw-bold">Serie</label>
+                                <input type="text" class="form-control form-control-sm text-muted" name="establecimiento_punto" value="{{ datos_emisor.codigo_establecimiento }}/{{ datos_emisor.punto_emision }}" readonly>
+                            </div>
+                            <div class="col-md-9">
+                                <label class="form-label mb-0 small fw-bold">Dirección Sucursal</label>
+                                <input type="text" class="form-control form-control-sm" name="direccion_sucursal" value="{{ datos_emisor.sucursal | default('N/A') }}" readonly>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label mb-0 small fw-bold">Contabilidad</label>
+                                <input type="text" class="form-control form-control-sm text-center" name="obligado_contabilidad" value="{{ datos_emisor.obligado_contabilidad | default('SI') }}" readonly>
+                            </div>
+                        </div>
+
+                        <div class="row g-2 mb-3 border-top pt-2">
+                             <div class="col-md-3">
+                                <label class="form-label mb-0 small fw-bold">Ambiente</label>
+                                <input type="text" class="form-control form-control-sm text-center" name="ambiente" value="{{ datos_emisor.ambiente | default('PRUEBA') }}" readonly>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label mb-0 small fw-bold">Emisión</label>
+                                <input type="text" class="form-control form-control-sm text-center" name="emision" value="{{ datos_emisor.tipo_emision | default('NORMAL') }}" readonly>
+                            </div>
+                           
+                        </div>
+
+                        <hr class="my-2">
+                        <div class="row g-2 align-items-center">
+                            <div class="col-md-3">
+                                <label class="form-label mb-0 small fw-bold">Fecha Emisión</label>
+                                {{ form.fecha(class="form-control form-control-sm", id="fecha-emision") }}
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label mb-0 small fw-bold">Hora Emisión</label>
+                                <input type="time" class="form-control form-control-sm" name="hora_emision" id="hora-emision" value="{{ facturas_ventas.hora_emision | default('') }}">
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label mb-0 small fw-bold">Fecha Caducidad</label>
+                                <input type="date" class="form-control form-control-sm" id="fecha-caducidad">
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label mb-0 small fw-bold">Días/Tipo Venta</label>
+                                <div class="input-group input-group-sm">
+                                    <input type="number" class="form-control text-end" id="dias-credito" name="dias_credito" readonly value="0">
+                                    <input type="text" class="form-control text-start" id="tipo-venta" name="tipo_venta" readonly value="Contado">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mb-4 g-3">
+            <div class="col-12">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-primary text-white p-2">
+                        <h6 class="mb-0">👤 Datos del Cliente</h6>
+                    </div>
+                    <div class="card-body p-3 small">
+                        <div class="row g-2">
+                            <div class="col-md-6">
+                                <label class="form-label mb-0 small fw-bold">Cliente (Selección)</label>
+                                {{ form.cliente(class="form-select form-select-sm", id="cliente") }}
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label mb-0 small fw-bold">RUC/CI</label>
+                                <input type="text" class="form-control form-control-sm" id="cliente-ruc-ci" name="cliente_ruc_ci" readonly value="{{ form.ruc_ci.data or '' }}">
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label mb-0 small fw-bold">Teléfono</label>
+                                <input type="text" class="form-control form-control-sm" id="cliente-telefono" name="cliente_telefono" readonly value="{{ form.telefono.data or '' }}">
+                            </div>
+                            <div class="col-md-9">
+                                <label class="form-label mb-0 small fw-bold">Dirección</label>
+                                <input type="text" class="form-control form-control-sm" id="cliente-direccion" name="cliente_direccion" readonly value="{{ form.direccion.data or '' }}">
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label mb-0 small fw-bold">Correo</label>
+                                <input type="text" class="form-control form-control-sm" id="cliente-correo" name="cliente_correo" readonly value="{{ form.correo.data or '' }}">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card mb-4 shadow-sm">
+            <div class="card-header bg-success text-white p-2">
+                <h6 class="mb-0">🛒 Detalle de Productos/Servicios</h6>
+            </div>
+            <div class="card-body p-3">
+                <div class="row g-2 align-items-center mb-2 fw-bold small text-center p-1 bg-light border rounded">
+                    <div class="col-2">Código</div>
+                    <div class="col-4">Producto</div>
+                    <div class="col-1">Cantidad.</div>
+                    <div class="col-2">P. Unitario</div>
+                    <div class="col-2">Subtotal</div>
+                    <div class="col-1"></div>
+                </div>
+
+                <div id="productos-container"></div>
+
+                <button type="button" class="btn btn-warning btn-sm mt-3" id="agregar-producto-btn">
+                    <i class="bi bi-plus-circle me-1"></i> Agregar Producto
+                </button>
+            </div>
+        </div>
+
+        <div class="row g-3 mb-4">
+            <div class="col-md-7">
+                <div class="card shadow-sm h-100">
+                    <div class="card-header bg-dark text-white p-2">
+                        <h6 class="mb-0">📝 Observaciones</h6>
+                    </div>
+                    <div class="card-body p-3">
+                        {{ form.observaciones(class="form-control form-control-sm", rows="4", placeholder="Ingrese detalles adicionales si los hay") }}
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-5">
+                <div class="card shadow-sm h-100">
+                    <div class="card-header bg-secondary text-white p-2">
+                        <h6 class="mb-0">💰 Resumen de Totales</h6>
+                    </div>
+                    <div class="card-body p-3">
+                        <div class="d-flex justify-content-between small mb-1 fw-bold">Subtotal: <span id="subtotal_general">$0.00</span></div>
+                        <div class="d-flex justify-content-between small mb-1 fw-bold">Descuento: <span id="descuento">$0.00</span></div>
+                        <div class="d-flex justify-content-between small mb-1 fw-bold">IVA: <span id="iva">$0.00</span></div>
+                        <hr class="my-2">
+                        <div class="d-flex justify-content-between fw-bold h5 text-primary fw-bold">Total a Pagar: <span id="total">$0.00</span></div>
+
+                        <input type="hidden" name="subtotal_neto_final" id="subtotal_neto_final">
+                        <input type="hidden" name="iva_final" id="iva_final">
+                        <input type="hidden" name="descuento_global" id="descuento_global">
+                        <input type="hidden" name="total_final" id="total_final">
+                    </div>
+                    <div class="card-footer text-end p-2">
+                        <button type="submit" class="btn btn-success btn-lg"><i class="bi bi-save me-1"></i> Guardar Factura</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script type="application/json" id="product-list-json">
+    {{ product_list_js_temp | tojson | safe }}
+</script>
+<script type="application/json" id="client-list-json">
+    {{ clientes_datos_js_temp | tojson | safe }}
+</script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const PRODUCTS = JSON.parse(document.getElementById("product-list-json").textContent || "[]");
+    const CLIENTS_DATA_LIST = JSON.parse(document.getElementById("client-list-json").textContent || "[]");
+    const CLIENTS_DATA = {};
+    CLIENTS_DATA_LIST.forEach(c => { if(c?.id_cliente !== undefined) CLIENTS_DATA[c.id_cliente] = c; });
+
+    const productosContainer = document.getElementById("productos-container");
+    const botonAgregar = document.getElementById("agregar-producto-btn");
+
+    const subtotalGeneralElement = document.getElementById("subtotal_general");
+    const totalElement = document.getElementById("total");
+    const ivaElement = document.getElementById("iva");
+    const descuentoElement = document.getElementById("descuento");
+
+    const subtotalHidden = document.getElementById("subtotal_neto_final");
+    const ivaHidden = document.getElementById("iva_final");
+    const descuentoHidden = document.getElementById("descuento_global");
+    const totalHidden = document.getElementById("total_final");
+
+    const clienteSelect = document.getElementById("cliente");
+    const rucCiInput = document.getElementById("cliente-ruc-ci");
+    const direccionInput = document.getElementById("cliente-direccion");
+    const telefonoInput = document.getElementById("cliente-telefono");
+    const correoInput = document.getElementById("cliente-correo");
+
+    const fechaEmisionInput = document.getElementById("fecha-emision");
+    const horaEmisionInput = document.getElementById("hora-emision"); 
+    const fechaCaducidadInput = document.getElementById("fecha-caducidad");
+    const diasCreditoInput = document.getElementById("dias-credito");
+    const tipoVentaInput = document.getElementById("tipo-venta");
+
+    const TASA_IVA = 0.15; 
+    const TASA_DESCUENTO = 0.00; 
+
+    function setDefaultTime() {
+        if (!horaEmisionInput.value) {
+            const now = new Date();
+            const hour = now.getHours().toString().padStart(2, '0');
+            const minute = now.getMinutes().toString().padStart(2, '0');
+            horaEmisionInput.value = `${hour}:${minute}`;
+        }
+    }
+
+    function actualizarInfoCliente() {
+        const cliente = CLIENTS_DATA[clienteSelect.value];
+        rucCiInput.value = cliente?.ruc_ci || '';
+        direccionInput.value = cliente?.direccion || '';
+        telefonoInput.value = cliente?.telefono || '';
+        correoInput.value = cliente?.correo || '';
+
+        // Actualizar precios de todos los productos ya agregados
+        actualizarPreciosProductos(clienteSelect.value);
+    }
+
+    function actualizarPreciosProductos(clienteId) {
+        productosContainer.querySelectorAll(".producto-fila").forEach(fila => {
+            const productoSelect = fila.querySelector(".producto-select");
+            const precioInput = fila.querySelector(".precio");
+            const selectedValue = productoSelect.value;
+
+            if(clienteId && selectedValue) {
+                fetch(`/facturacion/api/precio_acordado/${clienteId}/${selectedValue}`)
+                    .then(r => r.json())
+                    .then(data => precioInput.value = parseFloat(data.precio_acordado || 0).toFixed(4))
+                    .catch(() => precioInput.value = "0.0000")
+                    .finally(actualizarTotales);
+            }
+        });
+    }
+
+    function actualizarTotales() {
+        let subtotal_general = 0;
+        productosContainer.querySelectorAll(".producto-fila").forEach(fila => {
+            const cantidad = parseFloat(fila.querySelector(".cantidad").value) || 0;
+            const precio = parseFloat(fila.querySelector(".precio").value) || 0;
+            const subtotal_fila = cantidad * precio;
+            fila.querySelector(".subtotal").value = subtotal_fila.toFixed(2);
+            subtotal_general += subtotal_fila;
+        });
+
+        const descuento_monto = subtotal_general * TASA_DESCUENTO;
+        const base_imponible = subtotal_general - descuento_monto;
+        const iva_calculado = base_imponible * TASA_IVA;
+        const total_a_pagar = base_imponible + iva_calculado;
+
+        subtotalGeneralElement.textContent = `$${subtotal_general.toFixed(2)}`;
+        ivaElement.textContent = `$${iva_calculado.toFixed(2)}`;
+        descuentoElement.textContent = `$${descuento_monto.toFixed(2)}`;
+        totalElement.textContent = `$${total_a_pagar.toFixed(2)}`;
+
+        subtotalHidden.value = subtotal_general.toFixed(4);
+        ivaHidden.value = iva_calculado.toFixed(4);
+        descuentoHidden.value = descuento_monto.toFixed(4);
+        totalHidden.value = total_a_pagar.toFixed(4);
+    }
+
+    function agregarProducto() {
+        const fila = document.createElement("div");
+        fila.className = "row g-2 align-items-center mb-2 producto-fila";
+
+        let options = '<option value="">Seleccione Producto</option>';
+        PRODUCTS.forEach(p => {
+            options += `<option value="${p.id}" data-codigo="${p.codigo || ''}">${p.nombre}</option>`;
+        });
+
+        fila.innerHTML = `
+            <div class="col-2"><input type="text" class="form-control form-control-sm codigo text-center" name="codigo_producto[]" placeholder="Código" readonly></div>
+            <div class="col-4"><select name="producto_id[]" class="form-select form-select-sm producto-select">${options}</select></div>
+            <div class="col-1 d-flex justify-content-center"><input type="number" name="cantidad[]" class="form-control form-control-sm text-end cantidad w-100" value="1.00" min="0" step="0.01"></div>
+            <div class="col-2 d-flex"><input type="number" name="precio_unitario[]" class="form-control form-control-sm text-end precio w-100" value="0.0000" min="0" step="0.0001"></div>
+            <div class="col-2 d-flex"><input type="hidden" name="descuento_linea[]" value="0.00"><input type="number" name="subtotal_linea_display[]" class="form-control form-control-sm text-end subtotal w-100" value="0.00" readonly></div>
+            <div class="col-1 text-center"><button type="button" class="btn btn-danger btn-sm eliminar"><i class="bi bi-trash"></i></button></div>
+        `;
+
+        productosContainer.appendChild(fila);
+
+        // Si hay un cliente seleccionado, cargar precio automático
+        const clienteId = clienteSelect.value;
+        const productoSelect = fila.querySelector(".producto-select");
+        const precioInput = fila.querySelector(".precio");
+        productoSelect.addEventListener("change", () => {
+            const selectedValue = productoSelect.value;
+            const codigoInput = fila.querySelector(".codigo");
+            const selected = productoSelect.options[productoSelect.selectedIndex];
+            codigoInput.value = selected.getAttribute("data-codigo") || '';
+
+            if(clienteId && selectedValue) {
+                fetch(`/facturacion/api/precio_acordado/${clienteId}/${selectedValue}`)
+                    .then(r => r.json())
+                    .then(data => precioInput.value = parseFloat(data.precio_acordado || 0).toFixed(4))
+                    .catch(() => precioInput.value = "0.0000")
+                    .finally(actualizarTotales);
+            } else {
+                precioInput.value = "0.0000";
+                actualizarTotales();
+            }
+        });
+
+        actualizarTotales();
+    }
+
+    function actualizarDiasTipoVenta() {
+        if(fechaEmisionInput.value && fechaCaducidadInput.value) {
+            const fechaEmision = new Date(fechaEmisionInput.value);
+            const fechaCaducidad = new Date(fechaCaducidadInput.value);
+            fechaEmision.setHours(0,0,0,0);
+            fechaCaducidad.setHours(0,0,0,0);
+
+            if(fechaCaducidad > fechaEmision) {
+                diasCreditoInput.value = Math.ceil((fechaCaducidad - fechaEmision)/(1000*60*60*24));
+                tipoVentaInput.value = "Crédito";
+                return;
+            }
+        }
+        diasCreditoInput.value = 0;
+        tipoVentaInput.value = "Contado";
+    }
+
+    // --- Eventos ---
+    clienteSelect.addEventListener("change", actualizarInfoCliente);
+
+    productosContainer.addEventListener("input", e => {
+        if(e.target.classList.contains("cantidad") || e.target.classList.contains("precio")) actualizarTotales();
+    });
+
+    productosContainer.addEventListener("click", e => {
+        if(e.target.closest(".eliminar")) {
+            e.target.closest(".producto-fila").remove();
+            actualizarTotales();
+        }
+    });
+
+    fechaEmisionInput.addEventListener("change", actualizarDiasTipoVenta);
+    fechaCaducidadInput.addEventListener("change", actualizarDiasTipoVenta);
+
+    // --- Inicialización ---
+    setDefaultTime();
+    agregarProducto();
+    actualizarInfoCliente();
+    actualizarDiasTipoVenta();
+    actualizarTotales();
+
+    botonAgregar.addEventListener("click", agregarProducto);
+});
+</script>
+
+
+{% endblock %}
+
